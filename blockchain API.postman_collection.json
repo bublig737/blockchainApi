@@ -1,0 +1,219 @@
+{
+	"info": {
+		"_postman_id": "12a68366-9009-4c88-b780-6cb3aaadb3b6",
+		"name": "blockchain API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "BTC create",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"address\": \"0x15fD427DDd91472c7Fab4D3b60D402c703a33087\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8088/btc/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"btc",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BTC balance",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"address\": \"CBbw5H8ZSKjFzvgV1iUtxQY5madFx7qdDs\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8088/btc/getBalance",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"btc",
+						"getBalance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BTC crane",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"address\": \"BvBzUbTByFVS2xksZsyJedUNsqXKftTZq6\",\n\t\"amount\": 500000\n}"
+				},
+				"url": {
+					"raw": "localhost:8088/btc/crane",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"btc",
+						"crane"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BTC sendTransaction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"wifFrom\": \"BqJQkF1beVhoEFgo8GUf4LVeZxQVf9vQas8iaQ69fx9jb7SyBkFd\",\n\t\"addressTo\": \"CBbw5H8ZSKjFzvgV1iUtxQY5madFx7qdDs\",\n\t\"amount\": 200000\n}"
+				},
+				"url": {
+					"raw": "localhost:8088/btc/sendTransaction",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"btc",
+						"sendTransaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ETH create",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"address\": \"BuVVEBV87LhLgpsqdiXukbHwud3Xzz2BVw\",\n\t\"amount\": 500000\n}"
+				},
+				"url": {
+					"raw": "localhost:8088/eth/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"eth",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ETH balance",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"address\": \"0xEd1a4dc56fa8ADCE7Bcc63f785a676ca0c48032E\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8088/eth/getBalance",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"eth",
+						"getBalance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ETH sendTransaction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"addressesFrom\": \"\", \n\t\"privateFrom\": \"\",\n\t\"addressTo\": \"\", \n\t\"value\": \n}"
+				},
+				"url": {
+					"raw": "localhost:8088/eth/sendTransaction",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"eth",
+						"sendTransaction"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
