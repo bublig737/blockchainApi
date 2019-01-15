@@ -1,5 +1,6 @@
 # bockchainApi
 HTTP API for simple works with transactions on BTC(blockcypher) and ETH(rinkeby) testnetworks.
+Also can works with main networks.
 Additionally a collection of postman requests in the root folder
 
 ### Methods:
