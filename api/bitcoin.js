@@ -3,6 +3,7 @@ const {
   post
 } = require('axios')
 const bitcoinjs = require('bitcoinjs-lib')
+const config = require('../config')
 
 /* 
   The test API provides by blockcypher.com 
@@ -10,27 +11,6 @@ const bitcoinjs = require('bitcoinjs-lib')
   get recommended fee bitcoinfees.earn.com
   Utils provides by bitcoinjs-lib
   **/
-
-const config = {
-  MINIMUM_SATOSHIS_SEND: 550,
-  BCY_TEST_API_URL: 'https://api.blockcypher.com/v1/bcy/test',
-  BTC_API_URL: 'https://blockchain.info',
-  BTC_FEE_API_URL: 'https://bitcoinfees.earn.com/api/v1/fees/recommended',
-  TEST_BTC_NETWORK: {
-    messagePrefix: '\x18Bitcoin Signed Message:\n',
-    bech32: 'bc',
-    bip32: {
-      public: 0x0488b21e,
-      private: 0x0488ade4
-    },
-    pubKeyHash: 0x1b,
-    scriptHash: 0x1f,
-    wif: 0x49
-  },
-  INPUT_SIZE: 147,
-  OUTPUT_SIZE: 34,
-  EMPTY_TX_SIZE: 11,
-}
 
 class BtcApi {
   constructor(networkType) {
@@ -232,5 +212,7 @@ class TestBtc extends BtcApi {
 }
 
 const btc = new TestBtc('fb1c8427fd9b4e4e977d4fc8a525fd58')
+// const btc = new Btc()  // for main network
+
 
 module.exports = btc

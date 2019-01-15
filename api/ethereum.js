@@ -1,9 +1,11 @@
 const Web3 = require('web3')
+const config = require('../config')
+
 
 class Ethereum {
 
     constructor(){
-        this.web3 = new Web3('https://rinkeby.infura.io/v3/b80aae8fabf94b239512647808ef8a5f')
+        this.web3 = new Web3(config.ETH_API_URL)
     }
 
     async sendTransaction(addressesFrom, privateFrom, addressTo, value) {
@@ -18,10 +20,7 @@ class Ethereum {
         txObject.gasPrice = gasPrice
         txObject.value = txObject.value - (gas * gasPrice)
         let signTx = await this.web3.eth.accounts.signTransaction(txObject, privateFrom)
-        await this.web3.eth.sendSignedTransaction(signTx.rawTransaction)
-        return {
-            success: true
-        }
+        return await this.web3.eth.sendSignedTransaction(signTx.rawTransaction)
     }
 
     createAccount() {
