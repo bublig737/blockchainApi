@@ -12,20 +12,21 @@ const config = require('../config')
   Utils provides by bitcoinjs-lib
   **/
 
-class BtcApi {
-  constructor(networkType) {
+ class BtcApi {
+  constructor(networkType, token) {
+    this.token = token || ''
     this.networkType = networkType
     this.network = networkType === 'test' ? config.TEST_BTC_NETWORK : bitcoinjs.networks.bitcoin
   }
 
   async getTxsFromBlock(height) {
     if (this.networkType === 'test') {
-      let block = (await get(config.BCY_TEST_API_URL + '/blocks/' + height)).data
+      let block = (await get(config.BCY_TEST_API_URL + '/blocks/' + height + '?token=' + this.token)).data
       // transformation txs outputs to the blockchain.info version 
       let tx = []
-      for (let txHash of block.txids) {
+      for(let txHash of block.txids){
         let transaction = await this.getTx(txHash)
-        for (let output of transaction.outputs) {
+        for(let output of transaction.outputs){
           output.addr = output.addresses[0]
           delete output.addresses[0]
         }
@@ -40,48 +41,36 @@ class BtcApi {
 
   async getLatestBlockHeight() {
     if (this.networkType === 'test') {
-      return (await get(config.BCY_TEST_API_URL)).data.height
+      return (await get(config.BCY_TEST_API_URL + '?token=' + this.token)).data.height
     }
     return (await get(config.BTC_API_URL + '/latestblock')).data.height
   }
 
   async getTx(hash) {
     if (this.networkType === 'test') {
-      return (await get(config.BCY_TEST_API_URL + '/txs/' + hash)).data
+      return (await get(config.BCY_TEST_API_URL + '/txs/' + hash + '?token=' + this.token)).data
     }
     return (await get(config.BTC_API_URL + '/rawtx/' + hash)).data
   }
 
   async genAddress() {
-    const keyPair = bitcoinjs.ECPair.makeRandom({
-      network: this.network
-    })
-    const {
-      address
-    } = bitcoinjs.payments.p2pkh({
-      pubkey: keyPair.publicKey,
-      network: this.network
-    })
+    const keyPair = bitcoinjs.ECPair.makeRandom({ network: this.network })
+    const { address } = bitcoinjs.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.network })
     const wif = keyPair.toWIF()
-    return {
-      address,
-      wif
-    }
+    return { address, wif }
   }
 
   async getBalance(address) {
     if (this.networkType === 'test') {
-      return (await get(config.BCY_TEST_API_URL + '/addrs/' + address + '/balance?')).data
+      return (await get(config.BCY_TEST_API_URL + '/addrs/' + address + '/balance?token=' + this.token)).data
     }
     return (await get(config.BTC_API_URL + '/balance?active=' + address)).data[`${address}`]
   }
 
   async sendRawTransaction(rawTransaction) {
     if (this.networkType === 'test') {
-      return (await post(config.BCY_TEST_API_URL + '/txs/push',
-        JSON.stringify({
-          tx: rawTransaction
-        }))).data
+      return (await post(config.BCY_TEST_API_URL + '/txs/push?token=' + this.token,
+        JSON.stringify({ tx: rawTransaction }))).data
     }
     return (await post(config.BTC_API_URL + '/pushtx',
       'tx=' + rawTransaction)).data
@@ -90,7 +79,7 @@ class BtcApi {
   async getUtxos(address) {
     let utxo = []
     if (this.networkType === 'test') {
-      let refs = (await get(config.BCY_TEST_API_URL + '/addrs/' + address)).data.txrefs
+      let refs = (await get(config.BCY_TEST_API_URL + '/addrs/' + address + '?token=' + this.token)).data.txrefs
       if (!refs) {
         throw new Error('address from has empty confirmed tx list')
       }
@@ -117,17 +106,14 @@ class BtcApi {
   }
 
   async createSignSendTx(wifFrom, addressTo, amount) {
+    console.log('TX CREATE', wifFrom, addressTo, amount);
+    
     const keyPair = bitcoinjs.ECPair.fromWIF(wifFrom, this.network)
-    const {
-      address
-    } = (bitcoinjs.payments.p2pkh({
-      pubkey: keyPair.publicKey,
-      network: this.network
-    }))
+    const { address } = (bitcoinjs.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.network }))
     const txb = new bitcoinjs.TransactionBuilder(this.network)
     txb.setVersion(1)
     const feePerByte = (await this.getFeePerByte()).fastestFee
-    let size = config.EMPTY_TX_SIZE
+    let size = +config.EMPTY_TX_SIZE    
     let electUtxos = []
     let amountBtcInElectInputs = 0
     const balanceFrom = (await this.getBalance(address)).final_balance
@@ -156,15 +142,17 @@ class BtcApi {
         if (amountBtcInElectInputs >= value) break
       }
     }
+    
     // calculate fees
-    size += config.INPUT_SIZE * electUtxos.length
-    size += config.OUTPUT_SIZE
-    let fees = size * feePerByte
-    if (value < fees + config.MINIMUM_SATOSHIS_SEND) {
+    size += (+config.INPUT_SIZE) * electUtxos.length
+    size += +config.OUTPUT_SIZE
+    let fees = size * feePerByte 
+    if (value < fees + (+config.MINIMUM_SATOSHIS_SEND)) {
       throw new Error('Target value less than fees + minimum satoshis to send. Need rather than ' + (fees + config.MINIMUM_SATOSHIS_SEND))
     }
     let uotputValue = value - fees
     let changeFees = config.OUTPUT_SIZE * feePerByte
+
     // adds change output if need (cash back)
     if (amountBtcInElectInputs > uotputValue + fees) {
       if (amountBtcInElectInputs > uotputValue + changeFees + config.MINIMUM_SATOSHIS_SEND) {
@@ -174,7 +162,7 @@ class BtcApi {
         uotputValue = amountBtcInElectInputs - fees
       }
     }
-    // adds main output
+    // adds main output    
     txb.addOutput(addressTo, uotputValue)
     // adds inputs
     for (let utxo of electUtxos) {
@@ -186,7 +174,7 @@ class BtcApi {
     }
     // build and send transaction
     let rawTransaction = txb.build().toHex()
-    return this.sendRawTransaction(rawTransaction)
+    return await this.sendRawTransaction(rawTransaction)
   }
 }
 
@@ -199,7 +187,7 @@ class Btc extends BtcApi {
 // Need token for crane on test network. You can get token on blockcypher.com
 class TestBtc extends BtcApi {
   constructor(token) {
-    super('test')
+    super('test', token)
     this.token = token
   }
 

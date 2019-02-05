@@ -20,7 +20,11 @@ class Ethereum {
         txObject.gasPrice = gasPrice
         txObject.value = txObject.value - (gas * gasPrice)
         let signTx = await this.web3.eth.accounts.signTransaction(txObject, privateFrom)
-        return await this.web3.eth.sendSignedTransaction(signTx.rawTransaction)
+        
+        let answer = await this.web3.eth.sendSignedTransaction(signTx.rawTransaction)
+        console.log(answer);
+        
+        return answer
     }
 
     createAccount() {
